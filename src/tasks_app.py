@@ -2,6 +2,8 @@
 
 import argparse
 import json
+import os
+from datetime import date, datetime
 from pathlib import Path
 
 try:
@@ -11,6 +13,16 @@ except ImportError:
 
 
 RUTA_DADES = Path(__file__).resolve().parent.parent / "data" / "tasks.json"
+
+
+def obtenir_data_actual():
+    valor = os.environ.get("TASKS_AVUI")
+    if valor is not None:
+        try:
+            return datetime.strptime(valor, "%Y-%m-%d").date()
+        except ValueError:
+            pass
+    return date.today()
 
 
 def carregar_tasques():
