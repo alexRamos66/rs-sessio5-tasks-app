@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "id": 1,
+    "titol": "Pràctica 5",
+    "assignatura": "RS",
+    "estat": "pendent",
+    "data_limit": "2026-12-15"
+  },
+  {
+    "id": 2,
+    "titol": "Examen parcial",
+    "assignatura": "SO",
+    "estat": "pendent",
+    "data_limit": "2026-11-27"
+  },
+  {
+    "id": 3,
+    "titol": "Lliurament P4",
+    "assignatura": "TDIW",
+    "estat": "completada",
+    "data_limit": null
+  }
+]
