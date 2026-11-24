@@ -1,4 +1,4 @@
-"""Tests d'integració dels escenaris GS-01, GS-02, GS-03, GS-04 i GS-05."""
+"""Tests d'integració dels escenaris GS-01 a GS-07."""
 
 import json
 import shutil
@@ -30,6 +30,15 @@ def executar(projecte_temporal, *arguments):
         check=True,
     )
     return resultat.stdout.strip()
+
+
+def executar_amb_error(projecte_temporal, *arguments):
+    return subprocess.run(
+        [sys.executable, "src/tasks_app.py", *arguments],
+        cwd=projecte_temporal,
+        capture_output=True,
+        text=True,
+    )
 
 
 def escriure_registres(projecte_temporal, registres):
@@ -140,3 +149,50 @@ def test_gs05_identificadors_consecutius(projecte_temporal):
         "estat": "pendent",
         "data_limit": None,
     }
+
+
+def test_gs06_creacio_tasca_amb_data_limit(projecte_temporal):
+    sortida = executar(
+        projecte_temporal,
+        "add",
+        "--title",
+        "Pràctica 5",
+        "--subject",
+        "RS",
+        "--due",
+        "2026-12-15",
+    )
+
+    assert sortida == "Tasca [ID: 1] creada amb èxit"
+    fitxer = projecte_temporal / "data" / "tasks.json"
+    registres = json.loads(fitxer.read_text(encoding="utf-8"))
+    assert registres == [
+        {
+            "id": 1,
+            "titol": "Pràctica 5",
+            "assignatura": "RS",
+            "estat": "pendent",
+            "data_limit": "2026-12-15",
+        }
+    ]
+
+
+def test_gs07_creacio_tasca_amb_data_limit_no_valida(projecte_temporal):
+    fitxer = escriure_registres(projecte_temporal, [])
+
+    resultat = executar_amb_error(
+        projecte_temporal,
+        "add",
+        "--title",
+        "Pràctica 5",
+        "--subject",
+        "RS",
+        "--due",
+        "2026-13-45",
+    )
+
+    assert resultat.returncode != 0
+    assert resultat.stdout.strip() == (
+        "Error: data límit no vàlida (format esperat: AAAA-MM-DD)"
+    )
+    assert json.loads(fitxer.read_text(encoding="utf-8")) == []

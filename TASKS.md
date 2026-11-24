@@ -18,7 +18,7 @@ Objectiu: Ampliar la CLI amb data límit, modificació de tasques, comandament d
 - [x] Tasca 2.1: Ampliar el model `Task` a `src/models.py` amb el camp opcional `data_limit` (per defecte `None`), serialització JSON i compatibilitat amb registres antics sense el camp. (Model de dades v2.0)
 - [x] Tasca 2.2: Afegir a `src/tasks_app.py` una funció que obtingui la data actual de la variable d'entorn `TASKS_AVUI` (format `AAAA-MM-DD`) o del rellotge del sistema. (Requisit RNF-01)
 - [x] Tasca 2.3: Afegir l'opció `--due AAAA-MM-DD` al comandament `add`, amb validació de la data i el missatge d'error corresponent. (Requisits RF-05 i RF-06)
-- [ ] Tasca 2.4: Crear les proves dels escenaris GS-06 i GS-07 a `test/test_tasks_app.py` i verificar que passen. (Requisits RF-05 i RF-06)
+- [x] Tasca 2.4: Crear les proves dels escenaris GS-06 i GS-07 a `test/test_tasks_app.py` i verificar que passen. (Requisits RF-05 i RF-06)
 - [ ] Tasca 2.5: Implementar el comandament `done --id <ID>`, amb el missatge d'error per a ID inexistent. (Requisits RF-10 i RF-09)
 - [ ] Tasca 2.6: Crear les proves dels escenaris GS-11 i GS-12 i verificar que passen. (Requisits RF-10 i RF-09)
 - [ ] Tasca 2.7: Implementar el comandament `edit --id <ID>` amb les opcions `--title`, `--subject`, `--due` i `--status`, reutilitzant la validació de data i amb validació de l'estat i de l'ID. (Requisits RF-07, RF-08 i RF-09)
