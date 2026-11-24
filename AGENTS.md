@@ -14,6 +14,8 @@
 - Executar test únic: `python3 -m pytest test/test_tasks_app.py`
 - Provar amb una data fixa: `TASKS_AVUI=2026-11-24 python3 src/tasks_app.py list`
 
+- Exemples Sprint 3: `python3 src/tasks_app.py list --summary` · `python3 src/tasks_app.py list --subject RS` · `python3 src/tasks_app.py list --keyword Pràctica`
+
 ## Convencions de Codi
 - Estil: PEP8.
 - Idioma del codi i comentaris: Català (mantenir consistència en noms de variables).
