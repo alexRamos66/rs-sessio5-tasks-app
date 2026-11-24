@@ -81,6 +81,30 @@ def completar_tasca(id):
     print(f"Tasca [ID: {id}] completada")
 
 
+def editar_tasca(id, titol=None, assignatura=None, data_limit=None, estat=None):
+    if data_limit is not None and not es_data_valida(data_limit):
+        print("Error: data límit no vàlida (format esperat: AAAA-MM-DD)")
+        raise SystemExit(1)
+    if estat is not None and estat not in ("pendent", "completada"):
+        print("Error: estat no vàlid (valors permesos: pendent, completada)")
+        raise SystemExit(1)
+    tasques = carregar_tasques(crear_fitxer=False)
+    trobada = next((tasca for tasca in tasques if tasca.id == id), None)
+    if trobada is None:
+        print(f"Error: no existeix cap tasca amb ID {id}")
+        raise SystemExit(1)
+    if titol is not None:
+        trobada.titol = titol
+    if assignatura is not None:
+        trobada.assignatura = assignatura
+    if data_limit is not None:
+        trobada.data_limit = data_limit
+    if estat is not None:
+        trobada.estat = estat
+    desar_tasques(tasques)
+    print(f"Tasca [ID: {id}] modificada amb èxit")
+
+
 def llistar_tasques():
     tasques = carregar_tasques()
     if not tasques:
@@ -104,6 +128,13 @@ def main():
     done = subcomandes.add_parser("done", help="Marca una tasca com a completada")
     done.add_argument("--id", type=int, required=True, help="ID de la tasca")
 
+    editar = subcomandes.add_parser("edit", help="Modifica els atributs d'una tasca")
+    editar.add_argument("--id", type=int, required=True, help="ID de la tasca")
+    editar.add_argument("--title", help="Nou títol de la tasca")
+    editar.add_argument("--subject", help="Nova assignatura de la tasca")
+    editar.add_argument("--due", help="Nova data límit (AAAA-MM-DD)")
+    editar.add_argument("--status", help="Nou estat (pendent o completada)")
+
     arguments = parser.parse_args()
     if arguments.comanda == "add":
         afegir_tasca(arguments.title, arguments.subject, arguments.due)
@@ -111,6 +142,14 @@ def main():
         llistar_tasques()
     elif arguments.comanda == "done":
         completar_tasca(arguments.id)
+    elif arguments.comanda == "edit":
+        editar_tasca(
+            arguments.id,
+            titol=arguments.title,
+            assignatura=arguments.subject,
+            data_limit=arguments.due,
+            estat=arguments.status,
+        )
 
 
 if __name__ == "__main__":
