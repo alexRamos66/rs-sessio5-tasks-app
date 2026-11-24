@@ -26,4 +26,4 @@ Objectiu: Ampliar la CLI amb data límit, modificació de tasques, comandament d
 - [x] Tasca 2.9: Modificar `list` perquè mostri la data límit (` - límit: AAAA-MM-DD`) de les tasques que en tenen, mantenint el format de la v1.0 per a les que no en tenen. (Requisit RF-11)
 - [x] Tasca 2.10: Afegir a `list` els indicadors `[CADUCADA]` i `[URGENT]` segons les regles de data i d'estat. (Requisits RF-12, RF-13 i RF-14)
 - [x] Tasca 2.11: Crear les proves dels escenaris GS-13, GS-14, GS-15, GS-16 i GS-17 (amb `TASKS_AVUI=2026-11-24`) i verificar que passen. (Requisits RF-11, RF-12, RF-13, RF-14 i RNF-01)
-- [ ] Tasca 2.12: Executar tots els tests (`python3 -m pytest test`) i comprovar que els escenaris GS-01 a GS-05 de la v1.0 continuen passant (no regressió).
+- [x] Tasca 2.12: Executar tots els tests (`python3 -m pytest test`) i comprovar que els escenaris GS-01 a GS-05 de la v1.0 continuen passant (no regressió).
