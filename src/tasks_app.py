@@ -37,10 +37,10 @@ def es_data_valida(text):
     return True
 
 
-def carregar_tasques():
-    RUTA_DADES.parent.mkdir(parents=True, exist_ok=True)
+def carregar_tasques(crear_fitxer=True):
     if not RUTA_DADES.exists():
-        desar_tasques([])
+        if crear_fitxer:
+            desar_tasques([])
         return []
     try:
         dades = json.loads(RUTA_DADES.read_text(encoding="utf-8"))
@@ -70,6 +70,17 @@ def afegir_tasca(titol, assignatura, data_limit=None):
     print(f"Tasca [ID: {nou_id}] creada amb èxit")
 
 
+def completar_tasca(id):
+    tasques = carregar_tasques(crear_fitxer=False)
+    trobada = next((tasca for tasca in tasques if tasca.id == id), None)
+    if trobada is None:
+        print(f"Error: no existeix cap tasca amb ID {id}")
+        raise SystemExit(1)
+    trobada.estat = "completada"
+    desar_tasques(tasques)
+    print(f"Tasca [ID: {id}] completada")
+
+
 def llistar_tasques():
     tasques = carregar_tasques()
     if not tasques:
@@ -90,11 +101,16 @@ def main():
 
     subcomandes.add_parser("list", help="Mostra totes les tasques")
 
+    done = subcomandes.add_parser("done", help="Marca una tasca com a completada")
+    done.add_argument("--id", type=int, required=True, help="ID de la tasca")
+
     arguments = parser.parse_args()
     if arguments.comanda == "add":
         afegir_tasca(arguments.title, arguments.subject, arguments.due)
     elif arguments.comanda == "list":
         llistar_tasques()
+    elif arguments.comanda == "done":
+        completar_tasca(arguments.id)
 
 
 if __name__ == "__main__":
