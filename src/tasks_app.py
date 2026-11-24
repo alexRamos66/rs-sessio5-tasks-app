@@ -25,6 +25,18 @@ def obtenir_data_actual():
     return date.today()
 
 
+def es_data_valida(text):
+    if not isinstance(text, str):
+        return False
+    if len(text) != 10 or text[4] != "-" or text[7] != "-":
+        return False
+    try:
+        date.fromisoformat(text)
+    except ValueError:
+        return False
+    return True
+
+
 def carregar_tasques():
     RUTA_DADES.parent.mkdir(parents=True, exist_ok=True)
     if not RUTA_DADES.exists():
@@ -47,10 +59,13 @@ def desar_tasques(tasques):
     RUTA_DADES.write_text(contingut + "\n", encoding="utf-8")
 
 
-def afegir_tasca(titol, assignatura):
+def afegir_tasca(titol, assignatura, data_limit=None):
+    if data_limit is not None and not es_data_valida(data_limit):
+        print("Error: data límit no vàlida (format esperat: AAAA-MM-DD)")
+        raise SystemExit(1)
     tasques = carregar_tasques()
     nou_id = max((tasca.id for tasca in tasques), default=0) + 1
-    tasques.append(Task(nou_id, titol, assignatura))
+    tasques.append(Task(nou_id, titol, assignatura, data_limit=data_limit))
     desar_tasques(tasques)
     print(f"Tasca [ID: {nou_id}] creada amb èxit")
 
@@ -71,12 +86,13 @@ def main():
     afegir = subcomandes.add_parser("add", help="Afegeix una nova tasca")
     afegir.add_argument("--title", required=True, help="Títol de la tasca")
     afegir.add_argument("--subject", required=True, help="Assignatura de la tasca")
+    afegir.add_argument("--due", help="Data límit de la tasca (AAAA-MM-DD)")
 
     subcomandes.add_parser("list", help="Mostra totes les tasques")
 
     arguments = parser.parse_args()
     if arguments.comanda == "add":
-        afegir_tasca(arguments.title, arguments.subject)
+        afegir_tasca(arguments.title, arguments.subject, arguments.due)
     elif arguments.comanda == "list":
         llistar_tasques()
 
