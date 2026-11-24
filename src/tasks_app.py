@@ -147,13 +147,26 @@ def mostrar_resum(tasques):
     )
 
 
-def llistar_tasques(summary=False):
+def llistar_tasques(summary=False, subject=None, keyword=None):
     tasques = carregar_tasques()
     if summary:
         mostrar_resum(tasques)
         return
+    if subject is not None:
+        tasques = [
+            tasca for tasca in tasques
+            if tasca.assignatura.lower() == subject.lower()
+        ]
+    if keyword is not None:
+        tasques = [
+            tasca for tasca in tasques
+            if keyword.lower() in tasca.titol.lower()
+        ]
     if not tasques:
-        print("Registre de tasques buit.")
+        if subject is not None or keyword is not None:
+            print("No s'han trobat tasques amb els criteris indicats.")
+        else:
+            print("Registre de tasques buit.")
         return
     avui = obtenir_data_actual()
     for tasca in tasques:
@@ -177,6 +190,8 @@ def main():
     llistat.add_argument(
         "--summary", action="store_true", help="Mostra un resum quantitatiu"
     )
+    llistat.add_argument("--subject", help="Filtra per assignatura")
+    llistat.add_argument("--keyword", help="Filtra per paraula clau al títol")
 
     done = subcomandes.add_parser("done", help="Marca una tasca com a completada")
     done.add_argument("--id", type=int, required=True, help="ID de la tasca")
@@ -192,7 +207,11 @@ def main():
     if arguments.comanda == "add":
         afegir_tasca(arguments.title, arguments.subject, arguments.due)
     elif arguments.comanda == "list":
-        llistar_tasques(summary=arguments.summary)
+        llistar_tasques(
+            summary=arguments.summary,
+            subject=arguments.subject,
+            keyword=arguments.keyword,
+        )
     elif arguments.comanda == "done":
         completar_tasca(arguments.id)
     elif arguments.comanda == "edit":

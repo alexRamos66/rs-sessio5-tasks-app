@@ -34,6 +34,6 @@ Objectiu: Ampliar el comandament `list` amb resum quantitatiu (`--summary`), fil
 ### Tasques d'Execució:
 - [x] Tasca 3.1: Implementar l'opció `--summary` al comandament `list` de `src/tasks_app.py` per mostrar el recompte de tasques totals, pendents, completades, caducades i urgents. (Requisits RF-15 i RF-16)
 - [x] Tasca 3.2: Crear les proves dels escenaris GS-18 i GS-19 a `test/test_tasks_app.py` i verificar que passen. (Requisits RF-15 i RF-16)
-- [ ] Tasca 3.3: Implementar les opcions `--subject` i `--keyword` al comandament `list` de `src/tasks_app.py` (insensibles a majúscules/minúscules), incloent-hi el missatge quan no hi ha coincidències. (Requisits RF-17, RF-18 i RF-19)
+- [x] Tasca 3.3: Implementar les opcions `--subject` i `--keyword` al comandament `list` de `src/tasks_app.py` (insensibles a majúscules/minúscules), incloent-hi el missatge quan no hi ha coincidències. (Requisits RF-17, RF-18 i RF-19)
 - [ ] Tasca 3.4: Crear les proves dels escenaris GS-20, GS-21 i GS-22 a `test/test_tasks_app.py` i verificar que passen. (Requisits RF-17, RF-18 i RF-19)
 - [ ] Tasca 3.5: Executar tots els tests (`python3 -m pytest test`) i comprovar que els escenaris GS-01 a GS-17 continuen passant (no regressió).
