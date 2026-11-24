@@ -1,4 +1,4 @@
-"""Tests d'integració dels escenaris GS-01 a GS-07."""
+"""Tests d'integració dels escenaris GS-01 a GS-12."""
 
 import json
 import shutil
@@ -196,3 +196,54 @@ def test_gs07_creacio_tasca_amb_data_limit_no_valida(projecte_temporal):
         "Error: data límit no vàlida (format esperat: AAAA-MM-DD)"
     )
     assert json.loads(fitxer.read_text(encoding="utf-8")) == []
+
+
+def test_gs11_marcar_tasca_completada(projecte_temporal):
+    fitxer = escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": None,
+            }
+        ],
+    )
+
+    sortida = executar(projecte_temporal, "done", "--id", "1")
+
+    assert sortida == "Tasca [ID: 1] completada"
+    registres = json.loads(fitxer.read_text(encoding="utf-8"))
+    assert registres == [
+        {
+            "id": 1,
+            "titol": "Pràctica 1",
+            "assignatura": "RS",
+            "estat": "completada",
+            "data_limit": None,
+        }
+    ]
+
+
+def test_gs12_marcar_completada_tasca_inexistent(projecte_temporal):
+    fitxer = escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": None,
+            }
+        ],
+    )
+    contingut_original = fitxer.read_bytes()
+
+    resultat = executar_amb_error(projecte_temporal, "done", "--id", "99")
+
+    assert resultat.returncode != 0
+    assert resultat.stdout.strip() == "Error: no existeix cap tasca amb ID 99"
+    assert fitxer.read_bytes() == contingut_original
