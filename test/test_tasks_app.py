@@ -529,3 +529,96 @@ def test_gs19_resum_quantitatiu_registre_buit(projecte_temporal):
     assert sortida == (
         "Resum: 0 tasques (0 pendents, 0 completades, 0 caducades, 0 urgents)"
     )
+
+
+def test_gs20_filtratge_per_assignatura(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": "2026-11-20",
+            },
+            {
+                "id": 2,
+                "titol": "Examen parcial",
+                "assignatura": "SO",
+                "estat": "pendent",
+                "data_limit": "2026-11-27",
+            },
+            {
+                "id": 3,
+                "titol": "Pràctica 5",
+                "assignatura": "RS",
+                "estat": "completada",
+                "data_limit": None,
+            },
+        ],
+    )
+
+    sortida = executar_amb_avui(projecte_temporal, "list", "--subject", "rs")
+
+    assert sortida == (
+        "[1] Pràctica 1 (RS) - estat: pendent - límit: 2026-11-20 [CADUCADA]\n"
+        "[3] Pràctica 5 (RS) - estat: completada"
+    )
+
+
+def test_gs21_filtratge_per_paraula_clau(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": None,
+            },
+            {
+                "id": 2,
+                "titol": "Examen parcial",
+                "assignatura": "SO",
+                "estat": "pendent",
+                "data_limit": None,
+            },
+            {
+                "id": 3,
+                "titol": "Pràctica 5",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": None,
+            },
+        ],
+    )
+
+    sortida = executar_amb_avui(
+        projecte_temporal, "list", "--keyword", "pràctica"
+    )
+
+    assert sortida == (
+        "[1] Pràctica 1 (RS) - estat: pendent\n"
+        "[3] Pràctica 5 (RS) - estat: pendent"
+    )
+
+
+def test_gs22_filtratge_sense_resultats(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": None,
+            }
+        ],
+    )
+
+    sortida = executar_amb_avui(projecte_temporal, "list", "--subject", "IA")
+
+    assert sortida == "No s'han trobat tasques amb els criteris indicats."
