@@ -198,6 +198,96 @@ def test_gs07_creacio_tasca_amb_data_limit_no_valida(projecte_temporal):
     assert json.loads(fitxer.read_text(encoding="utf-8")) == []
 
 
+def test_gs08_modificacio_atributs_tasca(projecte_temporal):
+    fitxer = escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Practica 1",
+                "assignatura": "SO",
+                "estat": "pendent",
+                "data_limit": None,
+            }
+        ],
+    )
+
+    sortida = executar(
+        projecte_temporal,
+        "edit",
+        "--id",
+        "1",
+        "--title",
+        "Pràctica 1",
+        "--subject",
+        "RS",
+        "--due",
+        "2026-12-01",
+    )
+
+    assert sortida == "Tasca [ID: 1] modificada amb èxit"
+    registres = json.loads(fitxer.read_text(encoding="utf-8"))
+    assert registres == [
+        {
+            "id": 1,
+            "titol": "Pràctica 1",
+            "assignatura": "RS",
+            "estat": "pendent",
+            "data_limit": "2026-12-01",
+        }
+    ]
+
+
+def test_gs09_modificacio_estat_no_valid(projecte_temporal):
+    fitxer = escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": None,
+            }
+        ],
+    )
+    contingut_original = fitxer.read_bytes()
+
+    resultat = executar_amb_error(
+        projecte_temporal, "edit", "--id", "1", "--status", "acabada"
+    )
+
+    assert resultat.returncode != 0
+    assert resultat.stdout.strip() == (
+        "Error: estat no vàlid (valors permesos: pendent, completada)"
+    )
+    assert fitxer.read_bytes() == contingut_original
+
+
+def test_gs10_modificacio_tasca_inexistent(projecte_temporal):
+    fitxer = escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": None,
+            }
+        ],
+    )
+    contingut_original = fitxer.read_bytes()
+
+    resultat = executar_amb_error(
+        projecte_temporal, "edit", "--id", "99", "--title", "Nou títol"
+    )
+
+    assert resultat.returncode != 0
+    assert resultat.stdout.strip() == "Error: no existeix cap tasca amb ID 99"
+    assert fitxer.read_bytes() == contingut_original
+
+
 def test_gs11_marcar_tasca_completada(projecte_temporal):
     fitxer = escriure_registres(
         projecte_temporal,
