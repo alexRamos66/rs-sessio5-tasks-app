@@ -27,3 +27,13 @@ Objectiu: Ampliar la CLI amb data límit, modificació de tasques, comandament d
 - [x] Tasca 2.10: Afegir a `list` els indicadors `[CADUCADA]` i `[URGENT]` segons les regles de data i d'estat. (Requisits RF-12, RF-13 i RF-14)
 - [x] Tasca 2.11: Crear les proves dels escenaris GS-13, GS-14, GS-15, GS-16 i GS-17 (amb `TASKS_AVUI=2026-11-24`) i verificar que passen. (Requisits RF-11, RF-12, RF-13, RF-14 i RNF-01)
 - [x] Tasca 2.12: Executar tots els tests (`python3 -m pytest test`) i comprovar que els escenaris GS-01 a GS-05 de la v1.0 continuen passant (no regressió).
+
+## Increment 3: Modes de llistat (resum i filtratge)
+Objectiu: Ampliar el comandament `list` amb resum quantitatiu (`--summary`), filtratge per assignatura (`--subject`) i filtratge per paraula clau (`--keyword`) (SPECIFICATIONS v3.0).
+
+### Tasques d'Execució:
+- [ ] Tasca 3.1: Implementar l'opció `--summary` al comandament `list` de `src/tasks_app.py` per mostrar el recompte de tasques totals, pendents, completades, caducades i urgents. (Requisits RF-15 i RF-16)
+- [ ] Tasca 3.2: Crear les proves dels escenaris GS-18 i GS-19 a `test/test_tasks_app.py` i verificar que passen. (Requisits RF-15 i RF-16)
+- [ ] Tasca 3.3: Implementar les opcions `--subject` i `--keyword` al comandament `list` de `src/tasks_app.py` (insensibles a majúscules/minúscules), incloent-hi el missatge quan no hi ha coincidències. (Requisits RF-17, RF-18 i RF-19)
+- [ ] Tasca 3.4: Crear les proves dels escenaris GS-20, GS-21 i GS-22 a `test/test_tasks_app.py` i verificar que passen. (Requisits RF-17, RF-18 i RF-19)
+- [ ] Tasca 3.5: Executar tots els tests (`python3 -m pytest test`) i comprovar que els escenaris GS-01 a GS-17 continuen passant (no regressió).
