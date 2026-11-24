@@ -4,11 +4,12 @@ import json
 
 
 class Task:
-    def __init__(self, id, titol, assignatura, estat="pendent"):
+    def __init__(self, id, titol, assignatura, estat="pendent", data_limit=None):
         self.id = id
         self.titol = titol
         self.assignatura = assignatura
         self.estat = estat
+        self.data_limit = data_limit
 
     def to_dict(self):
         return {
@@ -16,6 +17,7 @@ class Task:
             "titol": self.titol,
             "assignatura": self.assignatura,
             "estat": self.estat,
+            "data_limit": self.data_limit,
         }
 
     def to_json(self):
@@ -28,6 +30,7 @@ class Task:
             dades["titol"],
             dades["assignatura"],
             dades["estat"],
+            dades.get("data_limit"),
         )
 
     @classmethod
@@ -40,7 +43,8 @@ class Task:
     def __repr__(self):
         return (
             f"Task({self.id!r}, {self.titol!r}, "
-            f"{self.assignatura!r}, {self.estat!r})"
+            f"{self.assignatura!r}, {self.estat!r}, "
+            f"{self.data_limit!r})"
         )
 
     def __eq__(self, altre):

@@ -56,6 +56,7 @@ def test_gs01_creacio_tasca(projecte_temporal):
             "titol": "Pràctica 1",
             "assignatura": "RS",
             "estat": "pendent",
+            "data_limit": None,
         }
     ]
 
@@ -137,4 +138,5 @@ def test_gs05_identificadors_consecutius(projecte_temporal):
         "titol": "Lliurament P5",
         "assignatura": "RS",
         "estat": "pendent",
+        "data_limit": None,
     }
