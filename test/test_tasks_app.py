@@ -479,3 +479,53 @@ def test_gs17_sense_indicadors_completades_i_sense_data(projecte_temporal):
         "[1] A (RS) - estat: completada - límit: 2026-11-20\n"
         "[2] B (RS) - estat: pendent"
     )
+
+
+def test_gs18_resum_quantitatiu_registres_diversos(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": "2026-11-20",
+            },
+            {
+                "id": 2,
+                "titol": "Examen parcial",
+                "assignatura": "SO",
+                "estat": "pendent",
+                "data_limit": "2026-11-27",
+            },
+            {
+                "id": 3,
+                "titol": "Pràctica 5",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": "2026-12-15",
+            },
+            {
+                "id": 4,
+                "titol": "Lliurament P4",
+                "assignatura": "TDIW",
+                "estat": "completada",
+                "data_limit": "2026-11-10",
+            },
+        ],
+    )
+
+    sortida = executar_amb_avui(projecte_temporal, "list", "--summary")
+
+    assert sortida == (
+        "Resum: 4 tasques (3 pendents, 1 completades, 1 caducades, 1 urgents)"
+    )
+
+
+def test_gs19_resum_quantitatiu_registre_buit(projecte_temporal):
+    sortida = executar_amb_avui(projecte_temporal, "list", "--summary")
+
+    assert sortida == (
+        "Resum: 0 tasques (0 pendents, 0 completades, 0 caducades, 0 urgents)"
+    )
