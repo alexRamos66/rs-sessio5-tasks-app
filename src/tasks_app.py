@@ -37,6 +37,21 @@ def es_data_valida(text):
     return True
 
 
+def obtenir_indicador(tasca, avui):
+    if tasca.estat != "pendent" or tasca.data_limit is None:
+        return ""
+    try:
+        limit = date.fromisoformat(tasca.data_limit)
+    except (TypeError, ValueError):
+        return ""
+    dies = (limit - avui).days
+    if dies < 0:
+        return " [CADUCADA]"
+    if dies < 7:
+        return " [URGENT]"
+    return ""
+
+
 def carregar_tasques(crear_fitxer=True):
     if not RUTA_DADES.exists():
         if crear_fitxer:
@@ -110,10 +125,12 @@ def llistar_tasques():
     if not tasques:
         print("Registre de tasques buit.")
         return
+    avui = obtenir_data_actual()
     for tasca in tasques:
         linia = str(tasca)
         if tasca.data_limit is not None:
             linia += f" - límit: {tasca.data_limit}"
+        linia += obtenir_indicador(tasca, avui)
         print(linia)
 
 
