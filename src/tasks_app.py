@@ -111,7 +111,10 @@ def llistar_tasques():
         print("Registre de tasques buit.")
         return
     for tasca in tasques:
-        print(tasca)
+        linia = str(tasca)
+        if tasca.data_limit is not None:
+            linia += f" - límit: {tasca.data_limit}"
+        print(linia)
 
 
 def main():
