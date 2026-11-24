@@ -1,4 +1,4 @@
-# SPECIFICATIONS.md — Sistema Tasks_app (v2.0)
+# SPECIFICATIONS.md — Sistema Tasks_app (v3.0)
 
 ## 1. Visió General
 Tasks_app és una eina CLI lleugera per ajudar als estudiants a gestionar les seves tasques acadèmiques diàries.
@@ -14,6 +14,11 @@ Tasks_app és una eina CLI lleugera per ajudar als estudiants a gestionar les se
 - US-04: Com a estudiant, vull modificar qualsevol atribut d'una tasca a partir del seu ID per tal de corregir els errors comesos en registrar-la.
 - US-05: Com a estudiant, vull marcar una tasca com a completada per tal de distingir el que ja he fet del que em queda pendent.
 - US-06: Com a estudiant, vull que el llistat m'avisi de les tasques caducades i urgents per tal de prioritzar el meu treball.
+
+### Iteració 3 (v3.0)
+- US-07: Com a estudiant, vull consultar un resum quantitatiu de les meves tasques (totals, pendents, completades, caducades i urgents) per tal de tenir una visió global de la meva càrrega de treball.
+- US-08: Com a estudiant, vull filtrar el llistat de tasques per assignatura per tal de centrar-me en una matèria concreta.
+- US-09: Com a estudiant, vull cercar tasques per una paraula clau al títol per tal de localitzar ràpidament una entrega o examen.
 
 ## 3. Model de Dades (Mermaid)
 ```mermaid
@@ -48,6 +53,15 @@ classDiagram
 - RF-12 : Si una tasca amb estat `pendent` té una data límit anterior a la data actual, el sistema tasks_app ha de mostrar l'indicador `[CADUCADA]` al final de la seva línia en el comandament list.
 - RF-13 : Si una tasca amb estat `pendent` té una data límit igual o posterior a la data actual i inferior a 7 dies respecte d'aquesta (és a dir, entre 0 i 6 dies), el sistema tasks_app ha de mostrar l'indicador `[URGENT]` al final de la seva línia en el comandament list.
 - RF-14 : El sistema tasks_app no ha de mostrar mai els indicadors `[CADUCADA]` ni `[URGENT]` per a tasques amb estat `completada` ni per a tasques sense data límit.
+
+### Iteració 3 (v3.0)
+- RF-15 : El sistema tasks_app ha de proveir a l'estudiant la capacitat de visualitzar un resum quantitatiu de totes les tasques registrades (total, pendents, completades, caducades i urgents) mitjançant l'opció `--summary` del comandament `list`.
+- RF-16 : Quan s'executi `list --summary`, el sistema tasks_app ha de mostrar exactament el format següent:
+  `Resum: <total> tasques (<pendents> pendents, <completades> completades, <caducades> caducades, <urgents> urgents)`
+  on `caducades` i `urgents` es calculen només sobre les tasques amb estat `pendent` segons les regles de RF-12 i RF-13.
+- RF-17 : El sistema tasks_app ha de proveir a l'estudiant la capacitat de filtrar les tasques mostrades pel comandament `list` segons una assignatura mitjançant l'opció `--subject <assignatura>` (comparació insensible a majúscules i minúscules).
+- RF-18 : El sistema tasks_app ha de proveir a l'estudiant la capacitat de filtrar les tasques mostrades pel comandament `list` segons una paraula clau continguda al títol mitjançant l'opció `--keyword <paraula>` (comparació insensible a majúscules i minúscules).
+- RF-19 : Si no existeix cap tasca que compleixi els criteris de filtratge indicats amb `--subject` o `--keyword`, el sistema tasks_app ha de mostrar el missatge `No s'han trobat tasques amb els criteris indicats.`
 
 ### Requisits no funcionals (v2.0)
 - RNF-01 : El sistema tasks_app ha d'obtenir la data actual de la variable d'entorn `TASKS_AVUI` (format `AAAA-MM-DD`) quan estigui definida, i del rellotge del sistema en cas contrari, per tal de poder verificar els escenaris dependents de la data.
@@ -179,11 +193,59 @@ Nota: en els escenaris GS-13 a GS-17 la data actual és `2026-11-24` (`TASKS_AVU
     "[1] A (RS) - estat: completada - límit: 2026-11-20"
     "[2] B (RS) - estat: pendent"
 
+### Iteració 3 (v3.0)
+Nota: en els escenaris GS-18 a GS-22 la data actual és `2026-11-24` (`TASKS_AVUI=2026-11-24`, RNF-01).
+
+- GS-18: Resum quantitatiu de tasques amb registres diversos (RF-15, RF-16)
+  Atès que el fitxer `data/tasks.json` conté les següents tasques:
+    | id | títol          | assignatura | estat      | data_limit |
+    | 1  | Pràctica 1     | RS          | pendent    | 2026-11-20 |
+    | 2  | Examen parcial | SO          | pendent    | 2026-11-27 |
+    | 3  | Pràctica 5     | RS          | pendent    | 2026-12-15 |
+    | 4  | Lliurament P4  | TDIW        | completada | 2026-11-10 |
+  quan l’estudiant executa `python src/tasks_app.py list --summary`
+  aleshores el sistema mostra per pantalla:
+    "Resum: 4 tasques (3 pendents, 1 completades, 1 caducades, 1 urgents)"
+
+- GS-19: Resum quantitatiu quan el registre de tasques és buit (RF-15, RF-16)
+  Atès que la base de dades JSON no conté encara tasques
+  quan l’estudiant executa `python src/tasks_app.py list --summary`
+  aleshores el sistema mostra per pantalla:
+    "Resum: 0 tasques (0 pendents, 0 completades, 0 caducades, 0 urgents)"
+
+- GS-20: Filtratge de tasques per assignatura (RF-17)
+  Atès que el fitxer `data/tasks.json` conté les següents tasques:
+    | id | títol          | assignatura | estat      | data_limit |
+    | 1  | Pràctica 1     | RS          | pendent    | 2026-11-20 |
+    | 2  | Examen parcial | SO          | pendent    | 2026-11-27 |
+    | 3  | Pràctica 5     | RS          | completada | null       |
+  quan l’estudiant executa `python src/tasks_app.py list --subject rs`
+  aleshores el sistema mostra per pantalla:
+    "[1] Pràctica 1 (RS) - estat: pendent - límit: 2026-11-20 [CADUCADA]"
+    "[3] Pràctica 5 (RS) - estat: completada"
+
+- GS-21: Filtratge de tasques per paraula clau al títol (RF-18)
+  Atès que el fitxer `data/tasks.json` conté les següents tasques:
+    | id | títol          | assignatura | estat   | data_limit |
+    | 1  | Pràctica 1     | RS          | pendent | null       |
+    | 2  | Examen parcial | SO          | pendent | null       |
+    | 3  | Pràctica 5     | RS          | pendent | null       |
+  quan l’estudiant executa `python src/tasks_app.py list --keyword pràctica`
+  aleshores el sistema mostra per pantalla:
+    "[1] Pràctica 1 (RS) - estat: pendent"
+    "[3] Pràctica 5 (RS) - estat: pendent"
+
+- GS-22: Filtratge sense resultats coincidents (RF-17, RF-18, RF-19)
+  Atès que el fitxer `data/tasks.json` conté la tasca amb id 1, títol `Pràctica 1`, assignatura `RS` i estat `pendent`
+  quan l’estudiant executa `python src/tasks_app.py list --subject IA`
+  aleshores el sistema mostra `No s'han trobat tasques amb els criteris indicats.`
+
 ## 6. Històric de versions
 | Versió | Iteració | Contingut incorporat |
 |--------|----------|----------------------|
 | v1.0   | 1        | US-01, US-02. RF-01 a RF-04. GS-01 a GS-05. Afegir i llistar tasques en JSON. |
 | v2.0   | 2        | US-03 a US-06. RF-05 a RF-14, RNF-01. GS-06 a GS-17. Data límit, edició, completar tasca i indicadors `[CADUCADA]` / `[URGENT]`. |
+| v3.0   | 3        | US-07 a US-09. RF-15 a RF-19. GS-18 a GS-22. Modes de llistat: resum quantitatiu (`--summary`), filtre per assignatura (`--subject`) i filtre per paraula clau (`--keyword`). |
 
 ## 7. Traçabilitat requisits → escenaris
 | Requisit | Escenaris |
@@ -199,3 +261,8 @@ Nota: en els escenaris GS-13 a GS-17 la data actual és `2026-11-24` (`TASKS_AVU
 | RF-13 | GS-15, GS-16 |
 | RF-14 | GS-17 |
 | RNF-01 | GS-13 a GS-17 |
+| RF-15 | GS-18, GS-19 |
+| RF-16 | GS-18, GS-19 |
+| RF-17 | GS-20, GS-22 |
+| RF-18 | GS-21, GS-22 |
+| RF-19 | GS-22 |
