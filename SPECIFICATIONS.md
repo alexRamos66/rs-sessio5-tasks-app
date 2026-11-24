@@ -45,3 +45,19 @@ classDiagram
   aleshores el sistema mostra per pantalla:
     "[1] Pràctica 1 (RS) - estat: pendent"
     "[2] Examen parcial (SO) - estat: pendent"
+
+- GS-04: Creació del fitxer de dades quan no existeix
+  Atès que el fitxer `data/tasks.json` no existeix
+  quan l’estudiant executa `python src/tasks_app.py list`
+  aleshores el sistema crea el fitxer `data/tasks.json` inicialitzat amb una llista JSON buida (`[]`)
+  i el sistema mostra `Registre de tasques buit.`
+
+- GS-05: Assignació d'identificadors consecutius
+  Atès que el fitxer `data/tasks.json` conté les següents tasques:
+    | id | títol          | assignatura | estat   |
+    | 1  | Pràctica 1     | RS          | pendent |
+    | 2  | Examen parcial | SO          | pendent |
+  quan l’estudiant executa `python src/tasks_app.py add --title 'Lliurament P5' --subject 'RS'`
+  aleshores el sistema confirma `Tasca [ID: 3] creada amb èxit`
+  i el fitxer `data/tasks.json` conté 3 tasques
+  i la tasca amb id 3 té títol `Lliurament P5`, assignatura `RS` i estat `pendent`.

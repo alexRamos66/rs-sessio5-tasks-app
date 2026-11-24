@@ -22,3 +22,4 @@ Objectiu: Tenir una versió CLI funcional per afegir i consultar tasques en JSON
 
 
 
+\- \[ ] Tasca 1.6: Ampliar `test/test\_tasks\_app.py` amb els escenaris GS-04 (Requisit RF-02) i GS-05 (Requisit RF-03), i verificar que tots els tests passen (`python3 -m pytest test`).
