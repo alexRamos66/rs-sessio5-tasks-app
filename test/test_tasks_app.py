@@ -1,6 +1,7 @@
-"""Tests d'integració dels escenaris GS-01 a GS-12."""
+"""Tests d'integració dels escenaris GS-01 a GS-17."""
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -39,6 +40,18 @@ def executar_amb_error(projecte_temporal, *arguments):
         capture_output=True,
         text=True,
     )
+
+
+def executar_amb_avui(projecte_temporal, *arguments):
+    resultat = subprocess.run(
+        [sys.executable, "src/tasks_app.py", *arguments],
+        cwd=projecte_temporal,
+        capture_output=True,
+        text=True,
+        check=True,
+        env={**os.environ, "TASKS_AVUI": "2026-11-24"},
+    )
+    return resultat.stdout.strip()
 
 
 def escriure_registres(projecte_temporal, registres):
@@ -337,3 +350,132 @@ def test_gs12_marcar_completada_tasca_inexistent(projecte_temporal):
     assert resultat.returncode != 0
     assert resultat.stdout.strip() == "Error: no existeix cap tasca amb ID 99"
     assert fitxer.read_bytes() == contingut_original
+
+
+def test_gs13_llistat_data_llunyana(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 5",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": "2026-12-15",
+            }
+        ],
+    )
+
+    sortida = executar_amb_avui(projecte_temporal, "list")
+
+    assert sortida == (
+        "[1] Pràctica 5 (RS) - estat: pendent - límit: 2026-12-15"
+    )
+
+
+def test_gs14_llistat_tasca_caducada(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Pràctica 1",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": "2026-11-20",
+            }
+        ],
+    )
+
+    sortida = executar_amb_avui(projecte_temporal, "list")
+
+    assert sortida == (
+        "[1] Pràctica 1 (RS) - estat: pendent - límit: 2026-11-20 [CADUCADA]"
+    )
+
+
+def test_gs15_llistat_tasca_urgent(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "Examen parcial",
+                "assignatura": "SO",
+                "estat": "pendent",
+                "data_limit": "2026-11-27",
+            }
+        ],
+    )
+
+    sortida = executar_amb_avui(projecte_temporal, "list")
+
+    assert sortida == (
+        "[1] Examen parcial (SO) - estat: pendent - límit: 2026-11-27 [URGENT]"
+    )
+
+
+def test_gs16_limits_periode_urgencia(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "A",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": "2026-11-24",
+            },
+            {
+                "id": 2,
+                "titol": "B",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": "2026-11-30",
+            },
+            {
+                "id": 3,
+                "titol": "C",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": "2026-12-01",
+            },
+        ],
+    )
+
+    sortida = executar_amb_avui(projecte_temporal, "list")
+
+    assert sortida == (
+        "[1] A (RS) - estat: pendent - límit: 2026-11-24 [URGENT]\n"
+        "[2] B (RS) - estat: pendent - límit: 2026-11-30 [URGENT]\n"
+        "[3] C (RS) - estat: pendent - límit: 2026-12-01"
+    )
+
+
+def test_gs17_sense_indicadors_completades_i_sense_data(projecte_temporal):
+    escriure_registres(
+        projecte_temporal,
+        [
+            {
+                "id": 1,
+                "titol": "A",
+                "assignatura": "RS",
+                "estat": "completada",
+                "data_limit": "2026-11-20",
+            },
+            {
+                "id": 2,
+                "titol": "B",
+                "assignatura": "RS",
+                "estat": "pendent",
+                "data_limit": None,
+            },
+        ],
+    )
+
+    sortida = executar_amb_avui(projecte_temporal, "list")
+
+    assert sortida == (
+        "[1] A (RS) - estat: completada - límit: 2026-11-20\n"
+        "[2] B (RS) - estat: pendent"
+    )
