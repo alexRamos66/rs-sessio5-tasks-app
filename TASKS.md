@@ -32,7 +32,7 @@ Objectiu: Ampliar la CLI amb data límit, modificació de tasques, comandament d
 Objectiu: Ampliar el comandament `list` amb resum quantitatiu (`--summary`), filtratge per assignatura (`--subject`) i filtratge per paraula clau (`--keyword`) (SPECIFICATIONS v3.0).
 
 ### Tasques d'Execució:
-- [ ] Tasca 3.1: Implementar l'opció `--summary` al comandament `list` de `src/tasks_app.py` per mostrar el recompte de tasques totals, pendents, completades, caducades i urgents. (Requisits RF-15 i RF-16)
+- [x] Tasca 3.1: Implementar l'opció `--summary` al comandament `list` de `src/tasks_app.py` per mostrar el recompte de tasques totals, pendents, completades, caducades i urgents. (Requisits RF-15 i RF-16)
 - [ ] Tasca 3.2: Crear les proves dels escenaris GS-18 i GS-19 a `test/test_tasks_app.py` i verificar que passen. (Requisits RF-15 i RF-16)
 - [ ] Tasca 3.3: Implementar les opcions `--subject` i `--keyword` al comandament `list` de `src/tasks_app.py` (insensibles a majúscules/minúscules), incloent-hi el missatge quan no hi ha coincidències. (Requisits RF-17, RF-18 i RF-19)
 - [ ] Tasca 3.4: Crear les proves dels escenaris GS-20, GS-21 i GS-22 a `test/test_tasks_app.py` i verificar que passen. (Requisits RF-17, RF-18 i RF-19)

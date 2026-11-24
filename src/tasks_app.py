@@ -37,14 +37,20 @@ def es_data_valida(text):
     return True
 
 
-def obtenir_indicador(tasca, avui):
+def dies_fins_limit(tasca, avui):
     if tasca.estat != "pendent" or tasca.data_limit is None:
-        return ""
+        return None
     try:
         limit = date.fromisoformat(tasca.data_limit)
     except (TypeError, ValueError):
+        return None
+    return (limit - avui).days
+
+
+def obtenir_indicador(tasca, avui):
+    dies = dies_fins_limit(tasca, avui)
+    if dies is None:
         return ""
-    dies = (limit - avui).days
     if dies < 0:
         return " [CADUCADA]"
     if dies < 7:
@@ -120,8 +126,32 @@ def editar_tasca(id, titol=None, assignatura=None, data_limit=None, estat=None):
     print(f"Tasca [ID: {id}] modificada amb èxit")
 
 
-def llistar_tasques():
+def mostrar_resum(tasques):
+    avui = obtenir_data_actual()
+    pendents = sum(1 for tasca in tasques if tasca.estat == "pendent")
+    completades = sum(1 for tasca in tasques if tasca.estat == "completada")
+    caducades = 0
+    urgents = 0
+    for tasca in tasques:
+        dies = dies_fins_limit(tasca, avui)
+        if dies is None:
+            continue
+        if dies < 0:
+            caducades += 1
+        elif dies < 7:
+            urgents += 1
+    print(
+        f"Resum: {len(tasques)} tasques "
+        f"({pendents} pendents, {completades} completades, "
+        f"{caducades} caducades, {urgents} urgents)"
+    )
+
+
+def llistar_tasques(summary=False):
     tasques = carregar_tasques()
+    if summary:
+        mostrar_resum(tasques)
+        return
     if not tasques:
         print("Registre de tasques buit.")
         return
@@ -143,7 +173,10 @@ def main():
     afegir.add_argument("--subject", required=True, help="Assignatura de la tasca")
     afegir.add_argument("--due", help="Data límit de la tasca (AAAA-MM-DD)")
 
-    subcomandes.add_parser("list", help="Mostra totes les tasques")
+    llistat = subcomandes.add_parser("list", help="Mostra totes les tasques")
+    llistat.add_argument(
+        "--summary", action="store_true", help="Mostra un resum quantitatiu"
+    )
 
     done = subcomandes.add_parser("done", help="Marca una tasca com a completada")
     done.add_argument("--id", type=int, required=True, help="ID de la tasca")
@@ -159,7 +192,7 @@ def main():
     if arguments.comanda == "add":
         afegir_tasca(arguments.title, arguments.subject, arguments.due)
     elif arguments.comanda == "list":
-        llistar_tasques()
+        llistar_tasques(summary=arguments.summary)
     elif arguments.comanda == "done":
         completar_tasca(arguments.id)
     elif arguments.comanda == "edit":
